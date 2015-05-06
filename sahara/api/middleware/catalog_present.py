@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from keystoneclient import access
-from keystoneclient.openstack.common import jsonutils
+from sahara.openstack.common import jsonutils
 from keystoneclient.v2_0 import client as keystone_client
 
 from sahara.openstack.common import log as logging
