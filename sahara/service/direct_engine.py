@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -233,7 +233,7 @@ class DirectEngine(e.Engine):
 
             if new_count < node_group.count:
                 instances_to_delete += node_group.instances[new_count:
-                                                            node_group.count]
+                node_group.count]
                 if new_count == 0:
                     node_groups_to_delete.add(node_group.id)
             elif new_count > node_group.count:
@@ -315,11 +315,18 @@ class DirectEngine(e.Engine):
         if CONF.use_neutron:
             net_id = cluster.neutron_management_network
             nova_kwargs['nics'] = [{"net-id": net_id, "v4-fixed-ip": ""}]
+            nova_instance = nova.client().servers.create(name,
+                                                         node_group.get_image_id(),
+                                                         node_group.flavor_id,
+                                                         **nova_kwargs)
 
-        nova_instance = nova.client().servers.create(name,
-                                                     node_group.get_image_id(),
-                                                     node_group.flavor_id,
-                                                     **nova_kwargs)
+        else:
+            nova_instance = nova.client().servers.create(
+                name, node_group.get_image_id(), node_group.flavor_id,
+                scheduler_hints=hints, userdata=userdata,
+                key_name=cluster.user_keypair_id,
+                nics=self._get_default_network())
+
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,
                                               "instance_name": name})
@@ -364,7 +371,7 @@ class DirectEngine(e.Engine):
         security_groups = list(node_group.security_groups or [])
         security_groups.append(security_group.id)
         conductor.node_group_update(context.ctx(), node_group,
-                                    {"security_groups": security_groups})
+            {"security_groups": security_groups})
         return security_groups
 
     def _need_aa_server_group(self, node_group):
@@ -379,6 +386,12 @@ class DirectEngine(e.Engine):
             if node_group.floating_ip_pool:
                 networks.assign_floating_ip(instance.instance_id,
                                             node_group.floating_ip_pool)
+
+    def _get_default_network(self):
+        ctx = context.ctx()
+        name = ctx.tenant_name + "-net"
+        network = networks.list_networks(name=name)[0]
+        return [{"net-id": network["id"]}]
 
     def _await_active(self, cluster, instances):
         """Await all instances are in Active status and available."""
@@ -490,7 +503,7 @@ class DirectEngine(e.Engine):
                 networks.delete_floating_ip(instance.instance_id)
             except nova_exceptions.NotFound:
                 LOG.warn(_LW("Attempted to delete non-existent floating IP in "
-                         "pool %(pool)s from instance %(instance)s"),
+                             "pool %(pool)s from instance %(instance)s"),
                          {'pool': instance.node_group.floating_ip_pool,
                           'instance': instance.instance_id})
 
