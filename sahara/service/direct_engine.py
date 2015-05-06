@@ -325,7 +325,8 @@ class DirectEngine(e.Engine):
                 name, node_group.get_image_id(), node_group.flavor_id,
                 scheduler_hints=hints, userdata=userdata,
                 key_name=cluster.user_keypair_id,
-                nics=self._get_default_network())
+                nics=self._get_default_network(),
+                security_groups=security_groups)
 
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,
