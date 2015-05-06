@@ -137,33 +137,19 @@ echo "
 # List of plugins to be loaded. Sahara preserves the order of
 # the list when returning it. (list value)
 plugins=vanilla,hdp,spark,cdh
-
-[keystone_authtoken]
-# Complete public Identity API endpoint (string value)
-auth_uri=http://iam.savitestbed.ca:5000/v2.0/
-
-# Complete admin Identity API endpoint. This should specify
-# the unversioned root endpoint eg. https://localhost:35357/
-# (string value)
-identity_uri=http://iam.savitestbed.ca:35357/
-
-# Keystone account username (string value)
-admin_user=sahara
-
-# Keystone account password (string value)
-admin_password=saharasecret
-
-# Keystone service account tenant name to validate user tokens
-# (string value)
-admin_tenant_name=service
-
+os_region_name=${OS_REGION_NAME}
 
 debug=true
 verbose=true
 use_floating_ips=false
 use_identity_api_v3=false
-#use_neutron=false
 
+# Use Neutron or Nova Network (boolean value)
+use_neutron=false
+
+# Use network namespaces for communication (only valid to use in conjunction
+# with use_neutron=True)
+#use_namespaces=false
 
 logging_exception_prefix = %(color)s%(asctime)s.%(msecs)03d TRACE %(name)s ^[[01;35m%(instance)s^[[00m
 logging_debug_format_suffix = ^[[00;33mfrom (pid=%(process)d) %(funcName)s %(pathname)s:%(lineno)d^[[00m
@@ -172,10 +158,30 @@ logging_context_format_string = %(asctime)s.%(msecs)03d %(color)s%(levelname)s %
 
 [database]
 connection=mysql://sahara:saharapass@localhost/sahara
+
+[keystone_authtoken]
+# Complete public Identity API endpoint (string value)
+# auth_uri=${OS_AUTH_URL} # this is fine but I use the follwoing instead:
+auth_uri=http://${auth_host}:5000/v2.0
+
+# Complete admin Identity API endpoint. This should specify
+# the unversioned root endpoint eg. https://localhost:35357/
+# (string value)
+identity_uri=http://${auth_host}:35357/
+
+# Keystone account username (string value)
+admin_user=${OS_USERNAME}
+
+# Keystone account password (string value)
+admin_password=${OS_PASSWORD}
+
+# Keystone service account tenant name to validate user tokens
+# (string value)
+admin_tenant_name=${OS_TENANT_NAME}
 " | sudo tee /etc/sahara/sahara.conf >/dev/null
 
 sahara-venv/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
-#screen_it sahara "$(readlink -m ./sahara-venv/bin/sahara-all) --config-file /etc/sahara/sahara.conf"
+screen_it sahara "$(readlink -m ./sahara-venv/bin/sahara-all) --config-file /etc/sahara/sahara.conf"
 
 
 # install Sahara client
