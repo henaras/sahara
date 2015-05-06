@@ -39,6 +39,7 @@ from sahara.service import periodic
 from sahara.utils import api as api_utils
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
+from sahara.api.middleware import catalog_present
 
 
 LOG = log.getLogger(__name__)
@@ -46,6 +47,7 @@ LOG = log.getLogger(__name__)
 
 opts = [
     cfg.StrOpt('os_region_name',
+               default=None,
                help='Region name used to get services endpoints.'),
     cfg.StrOpt('infrastructure_engine',
                default='direct',
@@ -143,6 +145,8 @@ def make_app():
     if CONF.debug and not CONF.log_exchange:
         LOG.debug('Logging of request/response exchange could be enabled using'
                   ' flag --log-exchange')
+
+    app.wsgi_app = catalog_present.filter_factory(app.config)(app.wsgi_app)
 
     if CONF.log_exchange:
         app.wsgi_app = log_exchange.LogExchange.factory(CONF)(app.wsgi_app)
