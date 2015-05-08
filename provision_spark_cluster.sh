@@ -120,7 +120,7 @@ cat >./tmp/cluster_template_create.json <<EOL
         {
             "name": "workers",
             "node_group_template_id": "${worker_template_id}",
-            "count": 2
+            "count": 3
         }
     ]
 }
