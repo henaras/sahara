@@ -321,10 +321,9 @@ class DirectEngine(e.Engine):
                                                          **nova_kwargs)
 
         else:
-            sample_metadata = {'group_id': 123456789}
             nova_instance = nova.client().servers.create(
                 name, node_group.get_image_id(), node_group.flavor_id,
-                meta=sample_metadata,
+                meta=self._get_metadata(),
                 scheduler_hints=hints, userdata=userdata,
                 key_name=cluster.user_keypair_id,
                 nics=self._get_default_network(),
@@ -344,6 +343,10 @@ class DirectEngine(e.Engine):
                     old_aa_groups[node_process] = aa_group_ids
 
         return instance_id
+
+    def _get_metadata(self):
+        sample_metadata = {'group_id': '123456789'}
+        return sample_metadata
 
     def _create_auto_security_group(self, node_group):
         name = g.generate_auto_security_group_name(node_group)
