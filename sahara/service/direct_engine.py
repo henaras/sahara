@@ -323,7 +323,7 @@ class DirectEngine(e.Engine):
         else:
             nova_instance = nova.client().servers.create(
                 name, node_group.get_image_id(), node_group.flavor_id,
-                meta=self._get_metadata(),
+                meta=self._generate_group_name_meta(cluster.name, node_group.name),
                 scheduler_hints=hints, userdata=userdata,
                 key_name=cluster.user_keypair_id,
                 nics=self._get_default_network(),
@@ -344,9 +344,10 @@ class DirectEngine(e.Engine):
 
         return instance_id
 
-    def _get_metadata(self):
-        sample_metadata = {'group_id': '123456789'}
-        return sample_metadata
+    def _generate_group_name_meta(self, cluster_name, node_group_name):
+        group_name = ("%s-%s" % (cluster_name, node_group_name)).lower()
+        group_name_metadata = {'group_name': group_name}
+        return group_name_metadata
 
     def _create_auto_security_group(self, node_group):
         name = g.generate_auto_security_group_name(node_group)
