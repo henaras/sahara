@@ -192,7 +192,7 @@ sudo ln -s $(readlink -m ./sahara-venv/bin/sahara) /bin/sahara || true
 
 # Installing the cloudera manager for Cloudera plugin
 sudo pip install cm-api
-cp -fr /usr/local/lib/python2.7/dist-packages/* /home/ubuntu/sahara/sahara-venv/lib/python2.7/site-packages/
+cp -fr /usr/local/lib/python2.7/dist-packages/cm_* /home/ubuntu/sahara/sahara-venv/lib/python2.7/site-packages/
 
 # register Hadoop image
 #image_id=`sahara-venv/bin/nova image-list | awk '/ sahara-icehouse-vanilla-2.3.0-ubuntu-13.10 / {print $2}'`
