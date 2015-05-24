@@ -142,12 +142,10 @@ os_region_name=${OS_REGION_NAME}
 debug=true
 verbose=true
 use_identity_api_v3=false
+use_floating_ips=false
 
 # Use Neutron or Nova Network (boolean value)
 use_neutron=false
-
-# To solve the problem with cloudera clusters
-use_floating_ips=True
 
 # Use network namespaces for communication (only valid to use in conjunction
 # with use_neutron=True)
