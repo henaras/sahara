@@ -141,11 +141,13 @@ os_region_name=${OS_REGION_NAME}
 
 debug=true
 verbose=true
-use_floating_ips=false
 use_identity_api_v3=false
 
 # Use Neutron or Nova Network (boolean value)
 use_neutron=false
+
+# To solve the problem with cloudera clusters
+use_floating_ips=True
 
 # Use network namespaces for communication (only valid to use in conjunction
 # with use_neutron=True)
@@ -180,10 +182,6 @@ admin_password=${OS_PASSWORD}
 admin_tenant_name=${OS_TENANT_NAME}
 " | sudo tee /etc/sahara/sahara.conf >/dev/null
 
-sahara-venv/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
-screen_it sahara "$(readlink -m ./sahara-venv/bin/sahara-all) --config-file /etc/sahara/sahara.conf"
-
-
 # install Sahara client
 # sahara-venv/bin/pip install git+https://github.com/hongbin/python-saharaclient.git
 # new version of saharaclient
@@ -193,6 +191,10 @@ sudo ln -s $(readlink -m ./sahara-venv/bin/sahara) /bin/sahara || true
 # Installing the cloudera manager for Cloudera plugin
 sudo pip install cm-api
 cp -fr /usr/local/lib/python2.7/dist-packages/cm_* /home/ubuntu/sahara/sahara-venv/lib/python2.7/site-packages/
+
+# Starting the Sahara server
+sahara-venv/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
+screen_it sahara "$(readlink -m ./sahara-venv/bin/sahara-all) --config-file /etc/sahara/sahara.conf"
 
 # register Hadoop image
 #image_id=`sahara-venv/bin/nova image-list | awk '/ sahara-icehouse-vanilla-2.3.0-ubuntu-13.10 / {print $2}'`
