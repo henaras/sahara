@@ -180,6 +180,8 @@ admin_password=${OS_PASSWORD}
 admin_tenant_name=${OS_TENANT_NAME}
 " | sudo tee /etc/sahara/sahara.conf >/dev/null
 
+sahara-venv/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
+
 # install Sahara client
 # sahara-venv/bin/pip install git+https://github.com/hongbin/python-saharaclient.git
 # new version of saharaclient
@@ -191,7 +193,6 @@ sudo pip install cm-api
 cp -fr /usr/local/lib/python2.7/dist-packages/cm_* /home/ubuntu/sahara/sahara-venv/lib/python2.7/site-packages/
 
 # Starting the Sahara server
-sahara-venv/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 screen_it sahara "$(readlink -m ./sahara-venv/bin/sahara-all) --config-file /etc/sahara/sahara.conf"
 
 # register Hadoop image
