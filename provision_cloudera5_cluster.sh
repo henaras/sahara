@@ -70,7 +70,7 @@ else
 fi
 
 # delete cluster with the samce name if exists
-sahara cluster-delete --name cdh5-cluster || true
+sahara cluster-delete --name cdh-cluster || true
 sahara cluster-template-delete --name cdh5-cluster-template || true
 sahara node-group-template-delete --name cloudera-master-tmpl || true
 sahara node-group-template-delete --name cloudera-worker-tmpl || true
@@ -80,7 +80,7 @@ sahara node-group-template-delete --name cloudera-manager-tmpl || true
 # master node template
 cat >./tmp/ng_master_template_create.json <<EOL
 {
-    "name": "cdh-master-tmpl",
+    "name": "master-tmpl",
     "flavor_id": "2",
     "plugin_name": "cdh",
     "hadoop_version": "5",
@@ -95,7 +95,7 @@ master_template_id=`sahara node-group-template-show --name cdh-master-tmpl | awk
 # secondary master node template
 cat >./tmp/ng_sec_master_template_create.json <<EOL
 {
-    "name": "cdh-sec-master-tmpl",
+    "name": "sec-master-tmpl",
     "flavor_id": "2",
     "plugin_name": "cdh",
     "hadoop_version": "5",
@@ -110,7 +110,7 @@ sec_master_template_id=`sahara node-group-template-show --name cdh-sec-master-tm
 # manager node template
 cat >./tmp/ng_manager_template_create.json <<EOL
 {
-    "name": "cdh-manager-tmpl",
+    "name": "manager-tmpl",
     "flavor_id": "2",
     "plugin_name": "cdh",
     "hadoop_version": "5",
@@ -125,7 +125,7 @@ manager_template_id=`sahara node-group-template-show --name cdh-manager-tmpl | a
 # worker node template
 cat >./tmp/ng_worker_template_create.json <<EOL
 {
-    "name": "cdh-worker-tmpl",
+    "name": "worker-tmpl",
     "flavor_id": "2",
     "plugin_name": "cdh",
     "hadoop_version": "5",
@@ -145,22 +145,22 @@ cat >./tmp/cluster_template_create.json <<EOL
     "hadoop_version": "5",
     "node_groups": [
         {
-            "name": "cdh-master",
+            "name": "master",
             "node_group_template_id": "${master_template_id}",
             "count": 1
         },
         {
-            "name": "cdh-sec-master",
+            "name": "sec-master",
             "node_group_template_id": "${sec_master_template_id}",
             "count": 1
         },
         {
-            "name": "cdh-manager",
+            "name": "manager",
             "node_group_template_id": "${manager_template_id}",
             "count": 1
         },
         {
-            "name": "cdh-workers",
+            "name": "workers",
             "node_group_template_id": "${worker_template_id}",
             "count": 3
         }
@@ -176,7 +176,7 @@ image_id=`nova image-list | awk '/ ubuntu_sahara_cloudera_5_0_0/ {print $2}'`
 keypair=`nova keypair-list | awk 'NR==4 {print $2}'`
 cat >./cluster_create.json <<EOL
 {
-    "name": "cdh5-cluster",
+    "name": "cdh-cluster",
     "plugin_name": "cdh",
     "hadoop_version": "5",
     "cluster_template_id" : "${cluster_template_id}",
