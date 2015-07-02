@@ -130,6 +130,7 @@ fi
 virtualenv sahara-venv
 sahara-venv/bin/pip install git+https://github.com/henaras/sahara.git@stable/juno
 sahara-venv/bin/pip install mysql-python
+sahara-venv/bin/pip install functools32
 sudo mkdir /etc/sahara
 
 echo "
