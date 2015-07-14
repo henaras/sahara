@@ -157,7 +157,7 @@ def make_app():
 
     app.wsgi_app = auth_valid.wrap(app.wsgi_app)
     app.wsgi_app = acl.wrap(app.wsgi_app)
-    #app.wsgi_app = catalog_present.filter_factory(app.config)(app.wsgi_app)
+    app.wsgi_app = catalog_present.filter_factory(app.config)(app.wsgi_app)
 
     return app
 
