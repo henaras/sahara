@@ -145,6 +145,9 @@ verbose=true
 use_identity_api_v3=false
 use_floating_ips=false
 
+# make sahara to use direct engine for creating instances
+infrastructure_engine=direct
+
 # Use Neutron or Nova Network (boolean value)
 use_neutron=false
 
@@ -180,6 +183,13 @@ admin_password=${OS_PASSWORD}
 # (string value)
 admin_tenant_name=${OS_TENANT_NAME}
 " | sudo tee /etc/sahara/sahara.conf >/dev/null
+
+# creating the policy file in the same location as config file.
+echo "
+{
+    "default": ""
+}
+" | sudo tee /etc/sahara/policy.json >/dev/null
 
 sahara-venv/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 
