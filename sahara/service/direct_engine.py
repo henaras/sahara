@@ -359,10 +359,19 @@ class DirectEngine(e.Engine):
             net_id = cluster.neutron_management_network
             nova_kwargs['nics'] = [{"net-id": net_id, "v4-fixed-ip": ""}]
 
-        nova_instance = nova.client().servers.create(name,
-                                                     node_group.get_image_id(),
-                                                     node_group.flavor_id,
-                                                     **nova_kwargs)
+        # nova_instance = nova.client().servers.create(name,
+        #                                              node_group.get_image_id(),
+        #                                              node_group.flavor_id,
+        #                                              **nova_kwargs)
+        else:
+                nova_instance = nova.client().servers.create(
+                name, node_group.get_image_id(), node_group.flavor_id,
+                meta=self._generate_group_name_meta(cluster.name, node_group.name),
+                scheduler_hints=hints, userdata=userdata,
+                key_name=cluster.user_keypair_id,
+                nics=self._get_default_network(),
+                security_groups=security_groups)
+
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,
                                               "instance_name": name})
@@ -376,6 +385,17 @@ class DirectEngine(e.Engine):
                     old_aa_groups[node_process] = aa_group_ids
 
         return instance_id
+
+    def _generate_group_name_meta(self, cluster_name, node_group_name):
+        group_name = ("%s-%s" % (cluster_name, node_group_name)).lower()
+        group_name_metadata = {'group_name': group_name}
+        return group_name_metadata
+
+    def _get_default_network(self):
+        ctx = context.ctx()
+        name = ctx.tenant_name + "-net"
+        network = networks.list_networks(name=name)[0]
+        return [{"net-id": network["id"]}]
 
     def _create_auto_security_group(self, node_group):
         name = g.generate_auto_security_group_name(node_group)
