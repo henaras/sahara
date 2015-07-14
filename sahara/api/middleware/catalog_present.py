@@ -17,7 +17,7 @@ from keystoneclient import access
 from oslo_serialization import jsonutils
 from keystoneclient.v2_0 import client as keystone_client
 
-from sahara.openstack.common import log as logging
+from oslo_log import log as logging
 from sahara.utils.openstack import base as utils
 
 
