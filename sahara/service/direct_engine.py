@@ -365,12 +365,12 @@ class DirectEngine(e.Engine):
         #                                              **nova_kwargs)
 
         nova_instance = nova.client().servers.create(
-                name, node_group.get_image_id(), node_group.flavor_id,
-                meta=self._generate_group_name_meta(cluster.name, node_group.name),
-                scheduler_hints=hints, userdata=userdata,
-                key_name=cluster.user_keypair_id,
-                nics=self._get_default_network(),
-                security_groups=security_groups)
+            name, node_group.get_image_id(), node_group.flavor_id,
+            meta=self._generate_group_name_meta(cluster.name, node_group.name),
+            scheduler_hints=hints, userdata=userdata,
+            key_name=cluster.user_keypair_id,
+            nics=self._get_default_network(),
+            security_groups=security_groups)
 
         instance_id = conductor.instance_add(ctx, node_group,
                                              {"instance_id": nova_instance.id,
