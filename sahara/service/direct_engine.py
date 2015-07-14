@@ -363,8 +363,8 @@ class DirectEngine(e.Engine):
         #                                              node_group.get_image_id(),
         #                                              node_group.flavor_id,
         #                                              **nova_kwargs)
-        else:
-                nova_instance = nova.client().servers.create(
+
+        nova_instance = nova.client().servers.create(
                 name, node_group.get_image_id(), node_group.flavor_id,
                 meta=self._generate_group_name_meta(cluster.name, node_group.name),
                 scheduler_hints=hints, userdata=userdata,
