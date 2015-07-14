@@ -41,7 +41,7 @@ from sahara.utils.openstack import cinder
 from sahara.utils import remote
 from sahara.utils import rpc as messaging
 from sahara.utils import wsgi
-
+from sahara.api.middleware import catalog_present
 
 LOG = log.getLogger(__name__)
 
@@ -157,6 +157,7 @@ def make_app():
 
     app.wsgi_app = auth_valid.wrap(app.wsgi_app)
     app.wsgi_app = acl.wrap(app.wsgi_app)
+    app.wsgi_app = catalog_present.filter_factory(app.config)(app.wsgi_app)
 
     return app
 
