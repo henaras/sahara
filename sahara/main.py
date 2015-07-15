@@ -48,6 +48,7 @@ LOG = log.getLogger(__name__)
 
 opts = [
     cfg.StrOpt('os_region_name',
+               default=None,
                help='Region name used to get services endpoints.'),
     cfg.StrOpt('infrastructure_engine',
                default='direct',
