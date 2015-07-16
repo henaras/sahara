@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Usage: sh install_sahara.sh
+# Usage: sh install_sahara_kilo.sh
 # Created by Hamzeh
 # This script install Sahara. To ensure this script to work properly, user
 # need to provide credentials of Testbed with admin privilege.
